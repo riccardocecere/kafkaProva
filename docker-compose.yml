@@ -1,0 +1,26 @@
+# docker-compose.yml
+version: '3'
+
+services:
+  generator:
+    build: ./generator
+    environment:
+      KAFKA_BROKER_URL: broker:9092
+      OUTPUT_TOPIC: AAA
+      TRANSACTIONS_PER_SECOND: 1000
+  detector:
+    build: ./detector
+    environment:
+      KAFKA_BROKER_URL: broker:9092
+      INPUT_TOPIC: AAA
+      OUTPUT_TOPIC: BBB
+  destination:
+    build: ./destination
+    environment:
+      KAFKA_BROKER_URL: broker:9092
+      INPUT_TOPIC: BBB
+# Give this composition access to the Kafka network
+networks:
+  default:
+    external:
+      name: kafka-network
