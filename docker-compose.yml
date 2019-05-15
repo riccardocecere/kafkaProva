@@ -14,6 +14,12 @@ services:
       KAFKA_BROKER_URL: broker:9092
       INPUT_TOPIC: AAA
       OUTPUT_TOPIC: BBB
+      TRAINING_SET: 'data/training_set.csv'
+      TRAINING_PARQUET: 'data/training_set.parquet'
+      MODEL: 'classifier.sav'
+    volumes:
+      - ./detector/data:/data
+      - ./detector/model:/model
   destination:
     build: ./destination
     environment:

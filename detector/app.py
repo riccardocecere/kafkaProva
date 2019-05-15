@@ -3,12 +3,18 @@ import os
 import json
 from time import sleep
 from kafka import KafkaConsumer, KafkaProducer
+import classifier
 
 KAFKA_BROKER_URL = os.environ.get('KAFKA_BROKER_URL')
 INPUT_TOPIC = os.environ.get('INPUT_TOPIC')
 OUTPUT_TOPIC = os.environ.get('OUTPUT_TOPIC')
+MODEL = os.environ.get('MODEL')
+TRAINING_SET = os.environ.get('TRAINING_SET')
+TRAINING_PARQUET = os.environ.get('TRAINING_PARQUET')
+
 
 if __name__ == '__main__':
+    model = classifier.load_classifier(MODEL, TRAINING_PARQUET, TRAINING_SET)
     consumer = KafkaConsumer(
         INPUT_TOPIC,
         bootstrap_servers=KAFKA_BROKER_URL,
@@ -32,8 +38,10 @@ if __name__ == '__main__':
                 print(messages)
                 for message in messages:
                     print(message.value)
-                    future = producer.send(OUTPUT_TOPIC, value=message.value)
-                    result = future.get(timeout=60)
-                    # print(transaction)  # DEBUG
-                    print("Sent message n# " + str(message.value))
-            #print(dict)
+                    if classifier.predict(model, message.value) == 1:
+                        future = producer.send(OUTPUT_TOPIC, value=message.value)
+                        result = future.get(timeout=60)
+                        print("Sent message n# " + str(message.value))
+                    else:
+                        print('Predicted negative value ##########')
+        print('passo')
