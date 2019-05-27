@@ -1,7 +1,6 @@
 kafka-python
-sklearn
-pandas
-pattern
-requests
+pymongo
+scrapy
 bs4
-pyarrow
+requests
+pattern
